@@ -114,6 +114,7 @@
             app:srcCompat="@drawable/ic_sleep_4" />
 
         <ImageView
+            android:onClick="@{() -> sleepQualityViewModel.onSetSleepQuality(5)}"
             android:id="@+id/quality_five_image"
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
