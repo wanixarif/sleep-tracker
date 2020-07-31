@@ -18,6 +18,7 @@ package com.example.android.trackmysleepquality.sleeptracker
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.android.trackmysleepquality.database.SleepDatabaseDao
@@ -59,6 +60,13 @@ class SleepTrackerViewModel(
     val nightsString = Transformations.map(nights) { nights ->
         formatNights(nights, application.resources)
     }
+
+
+
+    private var _navigateToSleepQuality=MutableLiveData<SleepNight>()
+    val navigateToSleepQuality:LiveData<SleepNight>
+        get() = _navigateToSleepQuality
+
 
     init {
         initializeTonight()
@@ -132,9 +140,13 @@ class SleepTrackerViewModel(
             val oldNight = tonight.value ?: return@launch
 
             // Update the night in the database to add the end time.
-            oldNight.endTimeMili = System.currentTimeMillis()
 
-            update(oldNight)
+            if (oldNight.endTimeMili==oldNight.startTimeMili){
+                oldNight.endTimeMili = System.currentTimeMillis()
+                update(oldNight)
+                _navigateToSleepQuality.value=oldNight
+            }
+
         }
     }
 
@@ -149,6 +161,11 @@ class SleepTrackerViewModel(
             // And clear tonight since it's no longer in the database
             tonight.value = null
         }
+    }
+
+
+    fun doneNavigating(){
+        _navigateToSleepQuality.value=null
     }
 
     /**
